@@ -2,23 +2,30 @@ from keras.layers import Conv2D, Conv2DTranspose, MaxPooling2D, concatenate, Dro
     Add
 from keras.applications import efficientnet
 import keras
+import tensorflow as tf
+
+
+class BinaryMeanIoU(tf.keras.metrics.MeanIoU):
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        th = 0.5
+        return super().update_state(tf.cast(y_true > th, tf.int32), tf.cast(y_pred > th, tf.int32), sample_weight)
 
 
 def convolution_block(x, filters, size, strides=(1, 1), padding='same', activation=True):
     x = Conv2D(filters, size, strides=strides, padding=padding)(x)
     x = BatchNormalization()(x)
-    if activation == True:
+    if activation:
         x = ELU(alpha=0.1)(x)
     return x
 
 
-def residual_block(blockInput, num_filters=16):
-    x = ELU(alpha=0.1)(blockInput)
+def residual_block(block_input, num_filters=16):
+    x = ELU(alpha=0.1)(block_input)
     x = BatchNormalization()(x)
-    blockInput = BatchNormalization()(blockInput)
+    block_input = BatchNormalization()(block_input)
     x = convolution_block(x, num_filters, (3, 3))
     x = convolution_block(x, num_filters, (3, 3), activation=False)
-    x = Add()([x, blockInput])
+    x = Add()([x, block_input])
     return x
 
 

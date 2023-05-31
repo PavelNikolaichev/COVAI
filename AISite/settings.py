@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+from COVAI.NNmodels import BinaryMeanIoU
+import tensorflow as tf
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -132,3 +135,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Load AI Model that will be used for prediction
+
+MODEL = tf.keras.models.load_model('./models/checkpointUnetPlusPlus', custom_objects={'BinaryMeanIoU': BinaryMeanIoU})
+# Example:
+# MODEL = UEfficientNet(input_shape=(IMG_SIZE, IMG_SIZE, 3), dropout_rate=0.5)
+# MODEL.load_weights('./models/checkpointUnetPlusPlus')
