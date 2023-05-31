@@ -23,7 +23,7 @@ from COVAI.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexView.as_view()),
-    path('file-upload', predictImage, name='predictImage')
+    path('file-upload', IndexView.predictImage, name='predictImage')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
